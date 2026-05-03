@@ -52,7 +52,7 @@ enum GTFSJPDetector {
     // v3のシグナル: pattern_jp.txt の存在 か trips.jp_pattern_id の存在。
     static let v3Files: Set<String> = ["pattern_jp.txt"]
     static let v3Columns: [String: Set<String>] = [
-        "trips.txt": ["jp_pattern_id"],
+        "trips.txt": ["jp_pattern_id"]
     ]
 
     // v1/v2 共通の jp 拡張ファイル（v2の決定的差分は実装時に第2版仕様を参照して確定）。

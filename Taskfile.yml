@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: "3"
+
+vars:
+  SWIFT: swift
+
+tasks:
+  default:
+    cmds:
+      - task --list
+    silent: true
+
+  format:
+    cmds:
+      - "{{.SWIFT}} format . --recursive --in-place"
+    silent: true
