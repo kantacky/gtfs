@@ -4,8 +4,11 @@
 import PackageDescription
 
 let package = Package(
-    name: "gtfs-utils",
-    platforms: [.macOS(.v13)],
+    name: "GTFS",
+    platforms: [.macOS(.v26)],
+    products: [
+        .executable(name: "GTFSCLI", targets: ["GTFSCLI"])
+    ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.0"),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.19"),
@@ -13,7 +16,7 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
-            name: "gtfs-utils",
+            name: "GTFSCLI",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "ZIPFoundation", package: "ZIPFoundation"),

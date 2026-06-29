@@ -1,9 +1,9 @@
 import ArgumentParser
 
 @main
-struct GTFSUtils: AsyncParsableCommand {
+struct GTFSCLI: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
-        commandName: "gtfs-utils",
+        commandName: "gtfs",
         abstract: "GTFS / GTFS-JP まわりのユーティリティ集",
         subcommands: [DetectJPVersion.self, DecodeRT.self]
     )
