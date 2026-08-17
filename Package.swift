@@ -5,7 +5,12 @@ import PackageDescription
 
 let package = Package(
     name: "GTFS",
-    platforms: [.macOS(.v26)],
+    platforms: [
+        .iOS(.v26),
+        .macOS(.v26),
+        .visionOS(.v26),
+        .watchOS(.v26),
+    ],
     products: [
         .executable(name: "GTFSCLI", targets: ["GTFSCLI"])
     ],
