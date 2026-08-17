@@ -16,11 +16,14 @@ let package = Package(
         .library(name: "GTFSRealtime", targets: ["GTFSRealtime"]),
         .library(name: "GTFSSchedule", targets: ["GTFSSchedule"]),
         .library(name: "TransitApp", targets: ["TransitApp"]),
+        .library(name: "TransitAppDependency", targets: ["TransitAppDependency"]),
+        .library(name: "TransitAppFeature", targets: ["TransitAppFeature"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.8.2"),
         .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.38.1"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.26.1"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.15.0"),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.19"),
     ],
     targets: [
@@ -56,8 +59,8 @@ let package = Package(
             dependencies: [
                 "GTFSRealtime",
                 "GTFSSchedule",
-                .product(name: "Dependencies", package: "swift-composable-architecture"),
-                .product(name: "DependenciesMacros", package: "swift-composable-architecture"),
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "DependenciesMacros", package: "swift-dependencies"),
             ]
         ),
         .target(
@@ -65,6 +68,7 @@ let package = Package(
             dependencies: [
                 "TransitAppDependency",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(name: "Utility"),
