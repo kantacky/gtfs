@@ -1,0 +1,3 @@
+import TransitApp
+
+TransitApp.main()

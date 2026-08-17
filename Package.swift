@@ -15,6 +15,7 @@ let package = Package(
         .executable(name: "GTFSCLI", targets: ["GTFSCLI"]),
         .library(name: "GTFSRealtime", targets: ["GTFSRealtime"]),
         .library(name: "GTFSSchedule", targets: ["GTFSSchedule"]),
+        .library(name: "TransitApp", targets: ["TransitApp"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.0"),
@@ -45,6 +46,7 @@ let package = Package(
             ]
         ),
         .target(name: "GTFSSchedule"),
+        .target(name: "TransitApp"),
         .target(name: "Utility"),
     ],
     swiftLanguageModes: [.v6]
