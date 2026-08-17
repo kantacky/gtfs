@@ -1,9 +1,9 @@
 import Foundation
 
-enum ProfileVersion: String {
+public enum ProfileVersion: String {
     case v1, v2, v3, v4, unknown
 
-    var label: String {
+    public var label: String {
         switch self {
         case .v1: return "第1版"
         case .v2: return "第2版"
@@ -14,10 +14,10 @@ enum ProfileVersion: String {
     }
 }
 
-enum GTFSJPDetector {
+public enum GTFSJPDetector {
     // v3の公式差分（commmmons_doc_007-03_ver01.pdf）で「v4で本仕様に追加」とされたファイル群。
     // いずれか1つでもZIP内に存在すれば v4 と判定する。
-    static let v4Files: Set<String> = [
+    public static let v4Files: Set<String> = [
         // Pathways
         "pathways.txt", "levels.txt",
         // Flex
@@ -32,7 +32,7 @@ enum GTFSJPDetector {
 
     // v4で新設されたカラム（v3には存在しない）。ファイル名 -> 該当列名集合。
     // 1つでもヒットすれば v4 とみなす。
-    static let v4Columns: [String: Set<String>] = [
+    public static let v4Columns: [String: Set<String>] = [
         "feed_info.txt": ["default_lang", "feed_contact_email", "feed_contact_url"],
         "agency.txt": ["cemv_support"],
         "stops.txt": ["tts_stop_name", "level_id", "stop_access"],
@@ -50,15 +50,15 @@ enum GTFSJPDetector {
     ]
 
     // v3のシグナル: pattern_jp.txt の存在 か trips.jp_pattern_id の存在。
-    static let v3Files: Set<String> = ["pattern_jp.txt"]
-    static let v3Columns: [String: Set<String>] = [
+    public static let v3Files: Set<String> = ["pattern_jp.txt"]
+    public static let v3Columns: [String: Set<String>] = [
         "trips.txt": ["jp_pattern_id"]
     ]
 
     // v1/v2 共通の jp 拡張ファイル（v2の決定的差分は実装時に第2版仕様を参照して確定）。
-    static let jpExtensionFiles: Set<String> = ["agency_jp.txt", "office_jp.txt"]
+    public static let jpExtensionFiles: Set<String> = ["agency_jp.txt", "office_jp.txt"]
 
-    static func detect(_ inspection: FeedInspection) -> (ProfileVersion, [String]) {
+    public static func detect(_ inspection: FeedInspection) -> (ProfileVersion, [String]) {
         var reasons: [String] = []
 
         // v4判定
@@ -115,7 +115,7 @@ enum GTFSJPDetector {
     }
 
     /// FeedInspector に渡す「ヘッダ抽出対象」ファイル集合。
-    static var interestedFiles: Set<String> {
+    public static var interestedFiles: Set<String> {
         var s: Set<String> = [
             "feed_info.txt", "agency.txt", "stops.txt", "routes.txt",
             "trips.txt", "stop_times.txt", "fare_rules.txt",

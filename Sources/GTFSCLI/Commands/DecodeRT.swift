@@ -1,6 +1,8 @@
 import ArgumentParser
 import Foundation
+import GTFSRealtime
 import SwiftProtobuf
+import Utility
 
 struct DecodeRT: AsyncParsableCommand {
     static let configuration = CommandConfiguration(

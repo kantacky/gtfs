@@ -12,7 +12,9 @@ let package = Package(
         .watchOS(.v26),
     ],
     products: [
-        .executable(name: "GTFSCLI", targets: ["GTFSCLI"])
+        .executable(name: "GTFSCLI", targets: ["GTFSCLI"]),
+        .library(name: "GTFSRealtime", targets: ["GTFSRealtime"]),
+        .library(name: "GTFSSchedule", targets: ["GTFSSchedule"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.0"),
@@ -23,11 +25,27 @@ let package = Package(
         .executableTarget(
             name: "GTFSCLI",
             dependencies: [
+                "GTFSJP",
+                "GTFSRealtime",
+                "Utility",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
-                .product(name: "ZIPFoundation", package: "ZIPFoundation"),
                 .product(name: "SwiftProtobuf", package: "swift-protobuf"),
             ]
-        )
+        ),
+        .target(
+            name: "GTFSJP",
+            dependencies: [
+                .product(name: "ZIPFoundation", package: "ZIPFoundation"),
+            ]
+        ),
+        .target(
+            name: "GTFSRealtime",
+            plugins: [
+                .plugin(name: "SwiftProtobufPlugin", package: "swift-protobuf"),
+            ]
+        ),
+        .target(name: "GTFSSchedule"),
+        .target(name: "Utility"),
     ],
     swiftLanguageModes: [.v6]
 )

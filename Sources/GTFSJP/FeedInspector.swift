@@ -1,16 +1,16 @@
 import Foundation
 import ZIPFoundation
 
-struct FeedInspection {
+public struct FeedInspection {
     var files: Set<String>
     var headers: [String: Set<String>]
 }
 
-enum InspectError: Error, CustomStringConvertible {
+public enum InspectError: Error, CustomStringConvertible {
     case notAZip
     case missingFeedInfo
 
-    var description: String {
+    public var description: String {
         switch self {
         case .notAZip: return "ZIPアーカイブとして読めません"
         case .missingFeedInfo: return "feed_info.txt がZIP内に見つかりません"
@@ -20,10 +20,10 @@ enum InspectError: Error, CustomStringConvertible {
 
 private struct EarlyExit: Error {}
 
-struct FeedInspector {
+public struct FeedInspector {
     /// 関心のあるファイルのヘッダ行（カラム名集合）を抽出する。
     /// `interestedFiles` に含まれないエントリは存在チェックのみ行う。
-    static func inspect(zipData: Data, interestedFiles: Set<String>) throws -> FeedInspection {
+    public static func inspect(zipData: Data, interestedFiles: Set<String>) throws -> FeedInspection {
         let archive: Archive
         do {
             archive = try Archive(data: zipData, accessMode: .read)

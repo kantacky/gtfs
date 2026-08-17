@@ -4,12 +4,12 @@ import Foundation
     import FoundationNetworking
 #endif
 
-enum DownloadError: Error, CustomStringConvertible {
+public enum DownloadError: Error, CustomStringConvertible {
     case invalidURL(String)
     case httpStatus(Int)
     case nonHTTPResponse
 
-    var description: String {
+    public var description: String {
         switch self {
         case .invalidURL(let s): return "URLが不正です: \(s)"
         case .httpStatus(let code): return "HTTPエラー (status \(code))"
@@ -18,8 +18,8 @@ enum DownloadError: Error, CustomStringConvertible {
     }
 }
 
-struct Downloader {
-    static func fetch(url: URL) async throws -> Data {
+public struct Downloader {
+    public static func fetch(url: URL) async throws -> Data {
         let (data, response) = try await URLSession.shared.data(from: url)
         guard let http = response as? HTTPURLResponse else {
             throw DownloadError.nonHTTPResponse

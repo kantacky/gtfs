@@ -1,5 +1,7 @@
 import ArgumentParser
 import Foundation
+import GTFSJP
+import Utility
 
 struct DetectJPVersion: AsyncParsableCommand {
     static let configuration = CommandConfiguration(

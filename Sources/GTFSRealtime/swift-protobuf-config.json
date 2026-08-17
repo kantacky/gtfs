@@ -1,0 +1,10 @@
+{
+  "invocations": [
+    {
+      "protoFiles": [
+        "gtfs-realtime.proto"
+      ],
+      "visibility": "public"
+    }
+  ]
+}
