@@ -1,11 +1,3 @@
-[tasks.build]
-description = "Swift パッケージをビルドする"
-run = "swift build"
-
-[tasks.archive]
-description = "Swift パッケージをリリース構成でビルドする"
-run = "swift build -c release"
-
 [tasks.format]
 description = "Swift ソースコードをフォーマットする"
 run = "swift format . --recursive --in-place"
