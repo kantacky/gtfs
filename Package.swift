@@ -18,9 +18,10 @@ let package = Package(
         .library(name: "TransitApp", targets: ["TransitApp"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.8.2"),
+        .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.38.1"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.26.1"),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.19"),
-        .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.27.0"),
     ],
     targets: [
         .executableTarget(
@@ -46,7 +47,26 @@ let package = Package(
             ]
         ),
         .target(name: "GTFSSchedule"),
-        .target(name: "TransitApp"),
+        .target(
+            name: "TransitApp",
+            dependencies: ["TransitAppFeature"]
+        ),
+        .target(
+            name: "TransitAppDependency",
+            dependencies: [
+                "GTFSRealtime",
+                "GTFSSchedule",
+                .product(name: "Dependencies", package: "swift-composable-architecture"),
+                .product(name: "DependenciesMacros", package: "swift-composable-architecture"),
+            ]
+        ),
+        .target(
+            name: "TransitAppFeature",
+            dependencies: [
+                "TransitAppDependency",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ]
+        ),
         .target(name: "Utility"),
     ],
     swiftLanguageModes: [.v6]
