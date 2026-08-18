@@ -13,10 +13,10 @@ import Foundation
 public struct RouteNetwork: Codable, Identifiable, Hashable, Sendable {
     /// Identifies a network to which one or multiple `route_id`s belong.
     public let networkId: String
-    
+
     /// Identifies a route.
     public let routeId: String
-    
+
     public init(
         networkId: String,
         routeId: String
@@ -24,6 +24,6 @@ public struct RouteNetwork: Codable, Identifiable, Hashable, Sendable {
         self.networkId = networkId
         self.routeId = routeId
     }
-    
+
     public var id: String { "\(networkId)_\(routeId)" }
 }

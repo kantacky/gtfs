@@ -40,16 +40,16 @@ let package = Package(
         .target(
             name: "GTFSJP",
             dependencies: [
-                .product(name: "ZIPFoundation", package: "ZIPFoundation"),
+                .product(name: "ZIPFoundation", package: "ZIPFoundation")
             ]
         ),
         .target(
             name: "GTFSRealtime",
             dependencies: [
-                .product(name: "SwiftProtobuf", package: "swift-protobuf"),
+                .product(name: "SwiftProtobuf", package: "swift-protobuf")
             ],
             plugins: [
-                .plugin(name: "SwiftProtobufPlugin", package: "swift-protobuf"),
+                .plugin(name: "SwiftProtobufPlugin", package: "swift-protobuf")
             ]
         ),
         .target(name: "GTFSSchedule"),

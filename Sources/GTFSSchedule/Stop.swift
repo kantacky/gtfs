@@ -116,7 +116,7 @@ public struct Stop: Codable, Identifiable, Hashable, Sendable {
 
     /// Level of the location. The same level may be used by multiple unlinked stations.
     public let levelId: String?
-    
+
     /// Platform identifier for a platform stop (a stop belonging to a station). This should be just the platform identifier (eg. "G" or "3"). Words like “platform” or "track" (or the feed’s language-specific equivalent) should not be included. This allows feed consumers to more easily internationalize and localize the platform identifier into other languages.
     public let platformCode: String?
 

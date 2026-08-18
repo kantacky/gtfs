@@ -13,10 +13,10 @@ import Foundation
 public struct Network: Codable, Identifiable, Hashable, Sendable {
     /// Identifies a network.
     public let networkId: String
-    
+
     /// Name of the network.
     public let networkName: String?
-    
+
     public init(
         networkId: String,
         networkName: String?
@@ -24,6 +24,6 @@ public struct Network: Codable, Identifiable, Hashable, Sendable {
         self.networkId = networkId
         self.networkName = networkName
     }
-    
+
     public var id: String { networkId }
 }

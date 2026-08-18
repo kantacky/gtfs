@@ -13,10 +13,10 @@ import Foundation
 public struct Area: Codable, Identifiable, Hashable, Sendable {
     /// Identifies an area. Must be unique across all `areas.area_id` values.
     public let areaId: String
-    
+
     /// Name of the area.
     public let areaName: String?
-    
+
     public init(
         areaId: String,
         areaName: String?
@@ -24,6 +24,6 @@ public struct Area: Codable, Identifiable, Hashable, Sendable {
         self.areaId = areaId
         self.areaName = areaName
     }
-    
+
     public var id: String { areaId }
 }
