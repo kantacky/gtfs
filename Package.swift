@@ -74,6 +74,15 @@ let package = Package(
                 .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
+        .testTarget(
+            name: "TransitAppFeatureTests",
+            dependencies: [
+                "TransitAppDependency",
+                "TransitAppFeature",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
         .target(name: "Utility"),
     ],
     swiftLanguageModes: [.v6]
