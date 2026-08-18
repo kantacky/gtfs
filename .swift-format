@@ -13,16 +13,18 @@
   "lineBreakBeforeEachArgument" : false,
   "lineBreakBeforeEachGenericRequirement" : false,
   "lineBreakBetweenDeclarationAttributes" : false,
-  "lineLength" : 120,
+  "lineLength" : 100,
   "maximumBlankLines" : 1,
   "multiElementCollectionTrailingCommas" : true,
+  "multilineTrailingCommaBehavior" : "keptAsWritten",
   "noAssignmentInExpressions" : {
     "allowedFunctions" : [
       "XCTAssertNoThrow"
     ]
   },
   "orderedImports" : {
-    "includeConditionalImports" : false
+    "includeConditionalImports" : false,
+    "shouldGroupImports" : true
   },
   "prioritizeKeepingFunctionOutputTogether" : false,
   "reflowMultilineStringLiterals" : "never",
