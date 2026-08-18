@@ -13,22 +13,22 @@ import Foundation
 public struct RiderCategory: Codable, Identifiable, Hashable, Sendable {
     /// Identifies a rider category.
     public let riderCategoryId: String
-    
+
     /// Name of the rider category.
     public let riderCategoryName: String?
-    
+
     /// Minimum age for the rider category. If there are multiple rider categories with the same `min_age`, the one with the smaller `rider_category_id` takes precedence.
     public let minAge: Int?
-    
+
     /// Maximum age for the rider category. If there are multiple rider categories with the same `max_age`, the one with the smaller `rider_category_id` takes precedence.
     public let maxAge: Int?
-    
+
     /// URL linking to documentation that describes the rider category.
     public let riderCategoryUrl: String?
-    
+
     /// Defines the eligibility of a rider category.
     public let eligibilityUrl: String?
-    
+
     public init(
         riderCategoryId: String,
         riderCategoryName: String?,
@@ -44,6 +44,6 @@ public struct RiderCategory: Codable, Identifiable, Hashable, Sendable {
         self.riderCategoryUrl = riderCategoryUrl
         self.eligibilityUrl = eligibilityUrl
     }
-    
+
     public var id: String { riderCategoryId }
 }

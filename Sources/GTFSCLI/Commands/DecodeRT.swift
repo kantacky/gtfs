@@ -34,8 +34,10 @@ struct DecodeRT: AsyncParsableCommand {
         if pretty {
             let compact = try feed.jsonString(options: options)
             if let obj = try? JSONSerialization.jsonObject(with: Data(compact.utf8)),
-               let pretty = try? JSONSerialization.data(withJSONObject: obj, options: [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]),
-               let s = String(data: pretty, encoding: .utf8) {
+                let pretty = try? JSONSerialization.data(
+                    withJSONObject: obj, options: [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]),
+                let s = String(data: pretty, encoding: .utf8)
+            {
                 json = s
             } else {
                 json = compact

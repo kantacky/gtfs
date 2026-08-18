@@ -60,7 +60,8 @@ public struct FeedInspector {
         do {
             _ = try archive.extract(entry, bufferSize: 4096, skipCRC32: true) { chunk in
                 buffer.append(chunk)
-                if buffer.count >= maxBytes || buffer.contains(0x0A) /* LF */ {
+                // 0x0A は LF
+                if buffer.count >= maxBytes || buffer.contains(0x0A) {
                     throw EarlyExit()
                 }
             }

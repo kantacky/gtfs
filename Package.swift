@@ -40,16 +40,16 @@ let package = Package(
         .target(
             name: "GTFSJP",
             dependencies: [
-                .product(name: "ZIPFoundation", package: "ZIPFoundation"),
+                .product(name: "ZIPFoundation", package: "ZIPFoundation")
             ]
         ),
         .target(
             name: "GTFSRealtime",
             dependencies: [
-                .product(name: "SwiftProtobuf", package: "swift-protobuf"),
+                .product(name: "SwiftProtobuf", package: "swift-protobuf")
             ],
             plugins: [
-                .plugin(name: "SwiftProtobufPlugin", package: "swift-protobuf"),
+                .plugin(name: "SwiftProtobufPlugin", package: "swift-protobuf")
             ]
         ),
         .target(name: "GTFSSchedule"),
@@ -70,6 +70,15 @@ let package = Package(
             name: "TransitAppFeature",
             dependencies: [
                 "TransitAppDependency",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ]
+        ),
+        .testTarget(
+            name: "TransitAppFeatureTests",
+            dependencies: [
+                "TransitAppDependency",
+                "TransitAppFeature",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Dependencies", package: "swift-dependencies"),
             ]
