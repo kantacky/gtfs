@@ -1,3 +1,15 @@
+[tasks.build]
+description = "デバッグビルドを実行する"
+run = "swift build"
+
+[tasks.test]
+description = "ユニットテストを実行する"
+run = "swift test"
+
 [tasks.format]
 description = "Swift ソースコードをフォーマットする"
 run = "swift format . --recursive --in-place"
+
+[tasks."format:dry-run"]
+description = "Swift ソースコードのフォーマット差分を確認する"
+run = "swift format lint . --recursive --strict"
