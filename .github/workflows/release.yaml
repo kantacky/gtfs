@@ -1,0 +1,234 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Version component to bump"
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  BINARY_NAME: GTFSCLI
+  COMMAND_NAME: gtfs
+
+jobs:
+  tag:
+    name: Create tag
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.validate.outputs.version }}
+    steps:
+      - name: Calculate next version
+        id: validate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUMP: ${{ inputs.bump }}
+        run: |
+          if [ "${GITHUB_REF}" != "refs/heads/main" ]; then
+            echo "::error::Run this workflow from the main branch"
+            exit 1
+          fi
+          latest="$(gh api "repos/${GITHUB_REPOSITORY}/tags" --paginate --jq '.[].name' \
+            | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n1 || true)"
+          latest="${latest:-0.0.0}"
+          IFS=. read -r major minor patch <<< "${latest}"
+          case "${BUMP}" in
+            major) major=$((major + 1)); minor=0; patch=0 ;;
+            minor) minor=$((minor + 1)); patch=0 ;;
+            patch) patch=$((patch + 1)) ;;
+            *) echo "::error::Unknown bump: ${BUMP}"; exit 1 ;;
+          esac
+          VERSION="${major}.${minor}.${patch}"
+          echo "Latest: ${latest} -> Next: ${VERSION} (${BUMP})"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Create tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.validate.outputs.version }}
+        run: |
+          if gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${VERSION}" >/dev/null 2>&1; then
+            echo "::error::Tag ${VERSION} already exists"
+            exit 1
+          fi
+          gh api "repos/${GITHUB_REPOSITORY}/git/refs" \
+            -f ref="refs/tags/${VERSION}" \
+            -f sha="${GITHUB_SHA}"
+          echo "Created tag ${VERSION} at ${GITHUB_SHA}"
+
+  build:
+    name: Build and release
+    needs: tag
+    runs-on: macos-26
+    timeout-minutes: 60
+    outputs:
+      sha256: ${{ steps.package.outputs.sha256 }}
+      asset: ${{ steps.package.outputs.asset }}
+    env:
+      VERSION: ${{ needs.tag.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+
+      - uses: jdx/mise-action@3c2e0cf82a5b2e5249f0d3635a4d83d0ae861518 # v4.2.5
+
+      - name: Setup Xcode
+        run: |
+          xcodes select
+          defaults write com.apple.dt.Xcode IDESkipPackagePluginFingerprintValidatation -bool YES
+          defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
+
+      - name: Build arm64 binary
+        run: swift build -c release --product "${BINARY_NAME}" --arch arm64 --disable-sandbox
+
+      - name: Package
+        id: package
+        run: |
+          asset="${COMMAND_NAME}-${VERSION}-macos-arm64.tar.gz"
+          bin_dir="$(swift build -c release --arch arm64 --show-bin-path)"
+          mkdir -p dist
+          cp "${bin_dir}/${BINARY_NAME}" dist/
+          file "dist/${BINARY_NAME}"
+          tar -C dist -czf "${asset}" "${BINARY_NAME}"
+          sha256="$(shasum -a 256 "${asset}" | awk '{print $1}')"
+          echo "${sha256}  ${asset}" > "${asset}.sha256"
+          echo "asset=${asset}" >> "$GITHUB_OUTPUT"
+          echo "sha256=${sha256}" >> "$GITHUB_OUTPUT"
+
+      - name: Smoke test
+        run: ./dist/${BINARY_NAME} --help
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ASSET: ${{ steps.package.outputs.asset }}
+        run: |
+          gh release create "${VERSION}" \
+            "${ASSET}" \
+            "${ASSET}.sha256" \
+            --title "${VERSION}" \
+            --generate-notes \
+            --verify-tag
+
+  update-formula:
+    name: Open PR to homebrew-tap
+    needs: [tag, build]
+    runs-on: ubuntu-latest
+    permissions: {}
+    env:
+      VERSION: ${{ needs.tag.outputs.version }}
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.TAP_APP_CLIENT_ID }}
+          private-key: ${{ secrets.TAP_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: homebrew-tap
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Get app bot identity
+        id: bot
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          user_id="$(gh api "/users/${APP_SLUG}[bot]" --jq .id)"
+          echo "name=${APP_SLUG}[bot]" >> "$GITHUB_OUTPUT"
+          echo "email=${user_id}+${APP_SLUG}[bot]@users.noreply.github.com" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.repository_owner }}/homebrew-tap
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: true
+
+      - name: Write formula
+        env:
+          SHA256: ${{ needs.build.outputs.sha256 }}
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir -p Formula
+          cat > Formula/gtfs.rb <<EOF
+          class Gtfs < Formula
+            desc "Utilities for GTFS and GTFS-JP"
+            homepage "https://github.com/${REPO}"
+            url "https://github.com/${REPO}/releases/download/${VERSION}/gtfs-${VERSION}-macos-arm64.tar.gz"
+            version "${VERSION}"
+            sha256 "${SHA256}"
+
+            depends_on arch: :arm64
+            depends_on macos: :tahoe # Package.swift の .macOS(.v26) に合わせる
+
+            def install
+              bin.install "GTFSCLI" => "gtfs"
+            end
+
+            test do
+              assert_match "gtfs", shell_output("#{bin}/gtfs --help")
+            end
+          end
+          EOF
+          cat Formula/gtfs.rb
+
+      - name: Open pull request
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          branch="gtfs-${VERSION}"
+          git config user.name "${{ steps.bot.outputs.name }}"
+          git config user.email "${{ steps.bot.outputs.email }}"
+          git switch -c "${branch}"
+          git add Formula/gtfs.rb
+          if git diff --cached --quiet; then
+            echo "Formula already up to date"
+            exit 0
+          fi
+          git commit -m "gtfs ${VERSION}"
+          git push --force origin "${branch}"
+          if gh pr view "${branch}" >/dev/null 2>&1; then
+            echo "PR already exists"
+          else
+            gh pr create \
+              --title "gtfs ${VERSION}" \
+              --body "Update gtfs to [${VERSION}](https://github.com/${{ github.repository }}/releases/tag/${VERSION})." \
+              --head "${branch}"
+          fi
+
+  cleanup:
+    name: Delete release and tag on failure
+    needs: [tag, build, update-formula]
+    if: ${{ always() && needs.tag.result == 'success' && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) }}
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.tag.outputs.version }}
+    steps:
+      - name: Delete release and tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "${VERSION}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release delete "${VERSION}" --repo "${GITHUB_REPOSITORY}" --cleanup-tag --yes
+            echo "Deleted release ${VERSION}"
+          fi
+          if gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${VERSION}" >/dev/null 2>&1; then
+            gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/tags/${VERSION}"
+            echo "Deleted tag ${VERSION}"
+          fi
+          echo "::warning::Release ${VERSION} did not complete; the release and tag were deleted"
