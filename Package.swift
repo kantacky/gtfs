@@ -23,7 +23,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.8.2"),
         .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.41.0"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.26.1"),
-        .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.15.0"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies.git", from: "1.17.2"),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.21"),
     ],
     targets: [
